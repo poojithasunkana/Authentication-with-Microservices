@@ -1,9 +1,10 @@
+const apiResponseHandler = require("../../common/helpers/apiResponseHandler");
 const User = require("../models/User");
 
 class UserController {
   async getUser(req, res) {
     try {
-      const user = await User.findOne({ id: req.user._id });
+      const user = await User.findOne({ _id: req.user.id });
       return apiResponseHandler.successResponse(
         res,
         "User details fetched successfully",

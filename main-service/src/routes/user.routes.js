@@ -1,8 +1,15 @@
 const express = require("express");
-const authMiddleware = require("../../common/middlewares/authMiddleware");
+
 const userController = require("../controllers/user.controller");
+const apiKeyMiddleware = require("../../common/middlewares/apiKeyMiddleware");
+const authMiddleware = require("../../common/config/passport");
 
 const router = express();
 
-router.get("/api/v1/user", authMiddleware, userController.getUser);
+router.get(
+  "/api/v1/user",
+  apiKeyMiddleware,
+  authMiddleware,
+  userController.getUser
+);
 module.exports = router;

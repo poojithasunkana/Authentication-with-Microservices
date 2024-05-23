@@ -1,8 +1,7 @@
 require("dotenv").config({ path: process.cwd() + "/../.env" });
+
 class Config {
   port = process.env.PORT;
-  database = process.env.DATABASE;
-  jwtSecret = process.env.JWT_SECRET;
-  jwtExpiresIn = process.env.JWT_EXPIRES_IN;
+  main_service_api = process.env.MAIN_SERVICE_API;
 }
 module.exports = new Config();

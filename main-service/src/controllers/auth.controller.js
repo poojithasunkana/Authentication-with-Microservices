@@ -5,13 +5,13 @@ const jwt = require("jsonwebtoken");
 const uuid = require("uuid");
 const config = require("../../common/config/config");
 const ApiKeyMapping = require("../models/ApiKeyMapping");
-class AuthController {
-  async signToken(id) {
-    return jwt.sign({ id }, config.jwtSecret, {
-      expiresIn: config.jwtExpiresIn,
-    });
-  }
 
+function signToken(id) {
+  return jwt.sign({ id }, config.jwtSecret, {
+    expiresIn: config.jwtExpiresIn,
+  });
+}
+class AuthController {
   async register(req, res) {
     try {
       const { firstName, lastName, password, confirmPassword, email } =
@@ -30,10 +30,10 @@ class AuthController {
         email,
         passwordHash: hashedPassword,
       });
-      const apiKey = uuid();
+      const apiKey = uuid.v4();
       const apiKeyMapping = await ApiKeyMapping.create({
         userId: user.id,
-        apiKey,
+        ApiKey: apiKey,
       });
       user.apiKey = apiKey;
       return apiResponseHandler.successResponse(
@@ -53,7 +53,7 @@ class AuthController {
   async login(req, res) {
     try {
       const { email, password } = req.body;
-      const user = User.findOne({ email });
+      const user = await User.findOne({ email });
       if (!user) {
         return apiResponseHandler.errorResponse(
           res,
@@ -61,25 +61,29 @@ class AuthController {
           "No user found with the given email"
         );
       }
-      if (user.password != password) {
+      const isMatch = await bcrypt.compare(password, user.passwordHash);
+      if (!isMatch) {
         return apiResponseHandler.badRequest(
           res,
           "Cannot log in",
-          "incorrect email/password"
+          "incorrect password"
         );
       }
-      const jwtToken = this.signToken(user._id);
+      const jwtToken = signToken(user._id);
 
       // update authToken in apikey mapping table
-      await ApiKeyMapping.updateOne({ id: user._id }, { authToken: jwtToken });
-
+      const result = await ApiKeyMapping.updateOne(
+        { userId: user._id },
+        { authToken: jwtToken }
+      );
+      console.log(result);
       return apiResponseHandler.successResponse(
         res,
         "Login successful",
         jwtToken
       );
     } catch (err) {
-      return apiResponseHandler.login(
+      return apiResponseHandler.errorResponse(
         res,
         "Cannot log in, please try again",
         err.message

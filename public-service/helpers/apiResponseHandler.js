@@ -12,6 +12,7 @@ class ApiResponseHandler {
       error,
     });
   }
+
   async unAuthorized(res, message) {
     res.status(401).json({
       message,

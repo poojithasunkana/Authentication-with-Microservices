@@ -1,12 +1,13 @@
 const express = require("express");
-const authMiddleware = require("../../common/middlewares/authMiddleware");
-const userController = require("../controllers/user.controller");
+const authMiddleware = require("../../common/config/passport");
 const candidateController = require("../controllers/candidate.controller");
+const apiKeyMiddleware = require("../../common/middlewares/apiKeyMiddleware");
 
 const router = express();
 
 router.get(
   "/api/v1/candidates",
+  apiKeyMiddleware,
   authMiddleware,
   candidateController.getCandidatesByUser
 );

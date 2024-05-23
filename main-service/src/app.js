@@ -7,7 +7,9 @@ const session = require("express-session");
 const app = express();
 const port = config.port;
 const AuthRouter = require("./routes/auth.routes");
-
+const CandidateRouter = require("./routes/candidate.routes");
+const apiKeyMappingRouter = require("./routes/apiKeyMapping.routes");
+const UserRouter = require("./routes/user.routes");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
@@ -22,7 +24,9 @@ app.use(
 
 // implemented routes
 app.use(AuthRouter);
-
+app.use(CandidateRouter);
+app.use(apiKeyMappingRouter);
+app.use(UserRouter);
 app.all("*", (req, res) => {
   res.status(404).send({ error: "unknown path for services." });
 });
