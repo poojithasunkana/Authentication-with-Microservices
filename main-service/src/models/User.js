@@ -1,5 +1,8 @@
+// Import required modules
 const mongoose = require("mongoose");
 const validator = require("validator");
+
+// define user schema
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -24,6 +27,6 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+// creating user model using user schema
 const User = mongoose.model("User", userSchema);
 module.exports = User;

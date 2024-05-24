@@ -1,3 +1,4 @@
+// Import required modules
 const apiResponseHandler = require("../../common/helpers/apiResponseHandler");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
@@ -6,15 +7,19 @@ const uuid = require("uuid");
 const config = require("../../common/config/config");
 const ApiKeyMapping = require("../models/ApiKeyMapping");
 
+// Function to generate JWT token
 function signToken(id) {
   return jwt.sign({ id }, config.jwtSecret, {
     expiresIn: config.jwtExpiresIn,
   });
 }
+// class for handle authentication operations
 class AuthController {
+  // Method to register a new user
   async register(req, res) {
     try {
-      const { firstName, lastName, password, confirmPassword, email } =
+      // Extract registration details from request body
+      const { firstName, lastName,email, password, confirmPassword} =
         req.body;
       if (password != confirmPassword) {
         return apiResponseHandler.badRequest(
@@ -24,13 +29,16 @@ class AuthController {
         );
       }
       const hashedPassword = await bcrypt.hash(password, 10);
+      // Create a new user in the database
       const user = await User.create({
         firstName,
         lastName,
         email,
         passwordHash: hashedPassword,
       });
+      // Generate API key for the user
       const apiKey = uuid.v4();
+      // create entry into api key mapping table
       const apiKeyMapping = await ApiKeyMapping.create({
         userId: user.id,
         ApiKey: apiKey,
@@ -50,9 +58,13 @@ class AuthController {
     }
   }
 
+  // Method for authenticate user login
   async login(req, res) {
     try {
+      // Extract login credentials from request body
       const { email, password } = req.body;
+
+      // Find user by email in the database
       const user = await User.findOne({ email });
       if (!user) {
         return apiResponseHandler.errorResponse(
@@ -69,6 +81,8 @@ class AuthController {
           "incorrect password"
         );
       }
+
+      // Generate JWT token for authentication
       const jwtToken = signToken(user._id);
 
       // update authToken in apikey mapping table
