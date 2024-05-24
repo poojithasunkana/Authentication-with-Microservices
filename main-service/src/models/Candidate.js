@@ -1,5 +1,8 @@
+/// Import required modules
 const mongoose = require("mongoose");
 const validator = require("validator");
+
+// Define the candidate schema
 const candidateSchema = new mongoose.Schema(
   {
     firstName: {
@@ -25,5 +28,7 @@ const candidateSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Create Candidate model using the schema
 const Candidate = mongoose.model("Candidate", candidateSchema);
+
 module.exports = Candidate;

@@ -1,7 +1,10 @@
+// Import required modules
 const apiResponseHandler = require("../../common/helpers/apiResponseHandler");
 const ApiKeyMapping = require("../models/ApiKeyMapping");
 
+// class for handle api key mapping related operations
 class ApiKeyMappingController {
+  // Method to get authentication token by API key
   async getTokenByApiKey(apiKey) {
     try {
       const mapping = await ApiKeyMapping.findOne({ ApiKey: apiKey });
@@ -10,6 +13,8 @@ class ApiKeyMappingController {
       throw err;
     }
   }
+  
+  // Method to get mapping details by API key
   async getMappingByApikey(req, res) {
     try {
       const { apiKey } = req.params;
